@@ -15,7 +15,7 @@
         <div class="topbar">
             <div class="fill">
                 <div class="container">
-                    <a class="brand" href="@routes.Application.index()">Forms</a>
+                    <a class="brand" href="@routes.Application.index()">cuaQea Latch example</a>
                     <ul class="nav">
                         <li class="@("active".when(nav == "login"))">
 	                        <a href="@routes.LoginController.blank()">Login</a>
@@ -24,11 +24,8 @@
                             <a href="@routes.SignUp.blank()">Sign up</a>
                         </li>
                         <li class="@("active".when(nav == "contact"))">
-                            <a href="@routes.Contacts.blank()">Contacts</a>
+                            <a href="@routes.Contacts.blank()">Profile</a>
                         </li>
-						<li class="@("active".when(nav == "wizard"))">
-	                        <a href="@routes.Wizard.step(1)">Wizard</a>
-	                    </li>
                     </ul>
                 </div>
             </div>
@@ -52,7 +49,7 @@
 
             <footer>
                 <p>
-                    <a href="http://www.playframework.com">www.playframework.com</a>
+                    <a href="http://coding.cuaqea.com">http://coding.cuaqea.com</a>
                 </p>
             </footer>
 

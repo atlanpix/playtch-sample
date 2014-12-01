@@ -19,10 +19,6 @@ GET     /contacts                   controllers.Contacts.blank()
 GET     /contacts/fakecontact       controllers.Contacts.edit()
 POST    /contacts                   controllers.Contacts.submit()
 
-# Wizard
-GET     /wizard/:step               controllers.Wizard.step(step:Int)
-POST    /wizard/:step               controllers.Wizard.submit(step:Int)
-
 # Latch
 POST    /pair                       controllers.LatchController.pair()
 POST    /unpair                     controllers.LatchController.unpair()
