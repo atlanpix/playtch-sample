@@ -1,0 +1,25 @@
+@(pairingKeyForm: Form[PairingKey])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@title = {
+    Latch - Pair
+}
+
+@main(title, nav = "latch") {
+    @helper.form(action = routes.LatchController.pair) {
+
+        <fieldset>
+            <legend>Enter your personal details</legend>
+
+            @inputText(
+                pairingKeyForm("key"),
+                '_label -> "Pairing key",
+                '_help -> "A pairing key must be 6 characters. ",
+                '_error -> pairingKeyForm.globalError
+            )
+
+        </fieldset>
+    }
+}

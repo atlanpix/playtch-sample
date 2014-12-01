@@ -5,6 +5,10 @@
 # Home page
 GET     /                           controllers.Application.index()
 
+# Login
+GET     /login                      controllers.LoginController.blank()
+POST    /login                      controllers.LoginController.submit()
+
 # Signup
 GET     /signup                     controllers.SignUp.blank()
 GET     /users/fakeuser             controllers.SignUp.edit()
@@ -18,6 +22,10 @@ POST    /contacts                   controllers.Contacts.submit()
 # Wizard
 GET     /wizard/:step               controllers.Wizard.step(step:Int)
 POST    /wizard/:step               controllers.Wizard.submit(step:Int)
+
+# Latch
+POST    /pair                       controllers.LatchController.pair()
+POST    /unpair                     controllers.LatchController.unpair()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
