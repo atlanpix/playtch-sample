@@ -1,13 +1,15 @@
 package controllers;
 
+import models.datasource.UserDataSource;
+import models.entities.PairingKey;
+import models.entities.User;
+import play.Logger;
 import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
 
 import views.html.login.*;
 import views.html.latch.*;
-
-import models.*;
 
 public class LoginController extends Controller {
     
@@ -31,10 +33,8 @@ public class LoginController extends Controller {
         Form<User> filledForm = loginForm.bindFromRequest();
         
         // Check repeated password
-        if(!filledForm.field("password").valueOr("").isEmpty()) {
-            if(!filledForm.field("password").valueOr("").equals(filledForm.field("repeatPassword").value())) {
-                filledForm.reject("repeatPassword", "Password don't match");
-            }
+        if(filledForm.field("password").valueOr("").isEmpty()) {
+            filledForm.reject("password", "Enter a valid password");
         }
         
         // Check if the username is valid
@@ -45,14 +45,21 @@ public class LoginController extends Controller {
         }
         
         if(filledForm.hasErrors()) {
+            Logger.debug("Error");
             return badRequest(login.render(filledForm));
         } else {
-            /*if(user.isPaired()){
-                User created = filledForm.get();
-            } else if (!user.isPaired()) {*/
-                Form<PairingKey> filledFormKey = pairingKeyForm.bindFromRequest();
-                return ok(pair.render(filledFormKey));
-            //}
+            Logger.debug("Va bien");
+            UserDataSource userDataSource = new UserDataSource();
+            User user = userDataSource.getUser(filledForm.get().username);
+            if (user != null){
+                Logger.info("User no es null! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
+                if (user.password.equals(filledForm.get().password)){
+                    Logger.debug("Password correcto! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
+                    Form<PairingKey> filledFormKey = pairingKeyForm.bindFromRequest();
+                    return ok(pair.render(filledFormKey));
+                }
+            }
+            return unauthorized(login.render(filledForm));
         }
     }
   

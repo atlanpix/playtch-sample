@@ -1,4 +1,4 @@
-@(loginForm: Form[User])
+@(loginForm: Form[entities.User])
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -9,7 +9,7 @@
 
 @main(title, nav = "login") {
     
-    @helper.form(action = routes.SignUp.submit) {
+    @helper.form(action = routes.LoginController.submit) {
         
         <fieldset>
             <legend>Enter your personal details</legend>

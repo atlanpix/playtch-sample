@@ -1,4 +1,4 @@
-@(signupForm: Form[User])
+@(signupForm: Form[entities.User])
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -47,7 +47,7 @@
             
             @select(
                 signupForm("profile.country"), 
-                options = options(Countries.list),
+                options = options(entities.Countries.list),
                 '_default -> "--- Choose a country ---",
                 '_label -> "Country",
                 '_error -> signupForm("profile.country").error.map(_.withMessage("Please select your country"))

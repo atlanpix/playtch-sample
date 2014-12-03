@@ -1,12 +1,12 @@
 package controllers;
 
+import models.datasource.UserDataSource;
+import models.entities.User;
 import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
 
 import views.html.signup.*;
-
-import models.*;
 
 public class SignUp extends Controller {
     
@@ -61,7 +61,8 @@ public class SignUp extends Controller {
         if(filledForm.hasErrors()) {
             return badRequest(form.render(filledForm));
         } else {
-            User created = filledForm.get();
+            UserDataSource userDataSource = new UserDataSource();
+            User created = userDataSource.insertIntoUser(filledForm.get());
             return ok(summary.render(created));
         }
     }

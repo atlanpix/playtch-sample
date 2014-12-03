@@ -1,12 +1,11 @@
 package controllers;
 
+import models.entities.Contact;
 import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
 
 import views.html.contact.*;
-
-import models.*;
 
 public class Contacts extends Controller {
     

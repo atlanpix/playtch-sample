@@ -1,4 +1,4 @@
-package models;
+package models.entities;
 
 import play.data.validation.Constraints.*;
 

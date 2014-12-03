@@ -1,4 +1,4 @@
-@(pairingKeyForm: Form[PairingKey])
+@(pairingKeyForm: Form[entities.PairingKey])
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -21,5 +21,9 @@
             )
 
         </fieldset>
+
+        <div class="actions">
+            <input type="submit" class="btn primary" value="Pair">
+        </div>
     }
 }
