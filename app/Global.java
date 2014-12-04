@@ -31,28 +31,22 @@ public class Global extends GlobalSettings {
     public F.Promise<SimpleResult> onError(Http.RequestHeader requestHeader, Throwable t) {
 
         Logger.error("###########################################################################");
-        Logger.error("Gestión de Errores de Estanque");
-        Logger.error("###########################################################################");
+        Logger.error("Error");
 
         if(true) {
 
-            Logger.error("###########################################################################");
-            Logger.error(String.format("Mensaje Excepción %s", t.getMessage()));
-            Logger.error("###########################################################################");
+            Logger.error(String.format("Exception message: %s", t.getMessage()));
 
             //StringWriter sw = new StringWriter();
             //PrintWriter pw = new PrintWriter(sw);
             //t.printStackTrace(pw);
-
 
             ObjectNode exceptioJSON = Json.newObject();
             exceptioJSON.put("Message", t.getMessage());
             exceptioJSON.put("LocalizedMessage", "Not Necessary");
             exceptioJSON.put("StackTrace", "Not Necessary");
 
-
-
-            Logger.error("Fin de gestión Excepciones de cuaQea");
+            Logger.error("End");
             Logger.error("###########################################################################");
 
             return F.Promise.<SimpleResult>pure(Results.badRequest(
@@ -72,7 +66,6 @@ public class Global extends GlobalSettings {
 
     @Override
     public Action onRequest(Http.Request request, Method method) {
-        //TODO send to estanqe what user will do
         System.out.println("before each request... " + request.toString());
         System.out.println("request.body()... " + request.body().toString());
         return super.onRequest(request, method);

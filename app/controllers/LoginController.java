@@ -55,8 +55,12 @@ public class LoginController extends Controller {
                 Logger.info("User no es null! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
                 if (user.password.equals(filledForm.get().password)){
                     Logger.debug("Password correcto! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
-                    Form<PairingKey> filledFormKey = pairingKeyForm.bindFromRequest();
-                    return ok(pair.render(filledFormKey));
+
+                    session("username", user.username);
+                    session("email", user.email);
+                    session("latchAccountId", user.latchAccountId);
+
+                    return LatchController.blank();
                 }
             }
             return unauthorized(login.render(filledForm));
