@@ -31,7 +31,40 @@ public class LoginController extends Controller {
     public static Result blank() {
         return ok(login.render(loginForm));
     }
-  
+
+    private static String checkLatchStatus(String appId){
+
+        UserDataSource userDataSource = new UserDataSource();
+        User user = userDataSource.getUser(session("username"));
+        String accountId = user.latchAccountId;
+
+        if (!accountId.equals("") || accountId != null || !accountId.isEmpty()){
+            LatchResponse response = LatchController.getLatch().status(accountId);
+
+            // Para controlar una opración, habría que cambiar la llamada status a :
+            // latch.operationStatus(accountID, "El id de la operation")
+            if (response.getData() != null) {
+                String status = response.
+                        getData().
+                        get("operations").
+                        getAsJsonObject().
+                        get(appId).
+                        getAsJsonObject().
+                        get("status").getAsString();
+
+                // Para operaciones: String status = response.getData().get("operations").getAsJsonObject().get("El id de la operation").getAsJsonObject().get("status").getAsString();
+                if (!status.equals("") || status != null || !status.isEmpty()){
+                    Logger.debug("Status: " + status.toString());
+                    return status;
+                }
+            } else {
+                // We can decide to block user if Latch server is off: return "off";
+                // But we are going to be allowed
+            }
+        }
+        return "on";
+    }
+
     /**
      * Handle the form submission.
      */
@@ -60,7 +93,7 @@ public class LoginController extends Controller {
             if (user != null){
                 Logger.info("User no es null! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
                 if (user.password.equals(filledForm.get().password)){
-                    Logger.debug("Password correcto! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
+                    Logger.debug("Password correcto! Password introducido: " + filledForm.get().password + "Password del user: " + user.password);
 
                     // Check latch
                     boolean isLatchOn = true;

@@ -48,12 +48,16 @@ public class LatchController extends Controller {
     }
 
     /**
+     * Return a Latch object
+     * */
+    public static Latch getLatch(){
+        return new Latch(config.getString("latch.appId"), config.getString("latch.secretKey"));
+    }
+
+    /**
      * Handle the pair action.
      */
     public static Result pair() {
-
-        String appId = config.getString("latch.appId");
-        String secretKey = config.getString("latch.secretKey");
 
         Form<PairingKey> filledForm = pairingKeyForm.bindFromRequest();
 
@@ -66,7 +70,7 @@ public class LatchController extends Controller {
             return badRequest(views.html.latch.pair.render(filledForm));
         } else {
             // REMEMBER: sudo keytool -import -noprompt -trustcacerts -alias CACertificate -file ca.pem -keystore "/Library/Java/JavaVirtualMachines/jdk1.7.0_67.jdk/Contents/Home/jre/lib/security/cacerts" -storepass changeit
-            Latch latch = new Latch(appId, secretKey);
+            Latch latch = LatchController.getLatch();
             Logger.debug("Key: "+filledForm.get().key);
             LatchResponse response = latch.pair(filledForm.get().key);
 
@@ -101,11 +105,7 @@ public class LatchController extends Controller {
         User user = userDataSource.getUser(session("username"));
 
         if (user != null) {
-            String appId = config.getString("latch.appId");
-            String secretKey = config.getString("latch.secretKey");
-
-            Latch latch = new Latch(appId, secretKey);
-            LatchResponse response = latch.unpair(user.latchAccountId);
+            LatchResponse response = LatchController.getLatch().unpair(user.latchAccountId);
 
             if (response != null && response.getError() == null) {
                 String json = response.toJSON().toString();
@@ -114,7 +114,6 @@ public class LatchController extends Controller {
                 return badRequest(views.html.latch.pair.render(filledForm));
             } else {
                 Logger.debug("<Error> Pair fail");
-                filledForm = pairingKeyForm.bindFromRequest();
                 return badRequest(views.html.latch.unpair.render());
             }
         }
