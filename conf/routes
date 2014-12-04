@@ -8,6 +8,7 @@ GET     /                           controllers.Application.index()
 # Login
 GET     /login                      controllers.LoginController.blank()
 POST    /login                      controllers.LoginController.submit()
+GET     /logout                     controllers.LoginController.logout()
 
 # Signup
 GET     /signup                     controllers.SignUp.blank()

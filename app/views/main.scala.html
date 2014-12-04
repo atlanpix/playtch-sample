@@ -26,6 +26,9 @@
                         <li class="@("active".when(nav == "contact"))">
                             <a href="@routes.Contacts.blank()">Profile</a>
                         </li>
+                        <li class="@("active".when(nav == "logout"))">
+                            <a href="@routes.LoginController.logout()">Logout</a>
+                        </li>
                     </ul>
                 </div>
             </div>

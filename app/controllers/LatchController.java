@@ -58,6 +58,7 @@ public class LatchController extends Controller {
 
         UserDataSource userDataSource = new UserDataSource();
         User user = userDataSource.getUser(session("username"));
+
         String accountId = user.latchAccountId;
 
         if (!accountId.equals("") || accountId != null || !accountId.isEmpty()){
@@ -153,4 +154,48 @@ public class LatchController extends Controller {
         return badRequest(views.html.latch.pair.render(filledForm));
     }
 
+    /**
+     * Handle OTP
+     * */
+    /*public static Result checkOTP{
+
+        if(LatchController.checkIfAlmostAuthenticated())
+        {
+
+
+        } else {
+
+            return
+        }
+
+    }
+    public static function checkOtp(){
+        self::checkIfAlmostAuthenticated();
+        $storeOtp = DBHelper::getAndRemoveOtp($_SESSION["userId"]);
+        if ($storeOtp == $_POST["otp"]){
+            $_SESSION["loggedIn"] = true;
+            unset($_SESSION["almostAuthenticated"]);
+            header("Location: index.php?action=profile");
+            die();
+        } else {
+            session_unset();
+            setMsg("error", "Wrong second factor");
+            header("Location index.php?action=login");
+            die();
+        }
+    }
+
+        if(!isset($_SESSION["almostAuthenticated"])){
+            header("Location: index.php?action=logout");
+        }
+    */
+    public static boolean checkIfAlmostAuthenticated(){
+        if (!session("almostAuthenticated").isEmpty()
+            || session("almostAuthenticated") != null
+            || !session("almostAuthenticated").equals(""))
+        {
+            return false;
+        }
+        return true;
+    }
 }

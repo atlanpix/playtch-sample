@@ -12,6 +12,7 @@ import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
 
+import views.html.*;
 import views.html.login.*;
 import views.html.latch.*;
 
@@ -58,6 +59,9 @@ public class LoginController extends Controller {
             UserDataSource userDataSource = new UserDataSource();
             User user = userDataSource.getUser(filledForm.get().username);
             if (user != null){
+                session("username", user.username);
+                session("email", user.email);
+                session("latchAccountId", user.latchAccountId);
                 Logger.info("User no es null! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
                 if (user.password.equals(filledForm.get().password)){
                     Logger.debug("Password correcto! Password introducido: " + filledForm.get().password + "Password del user: " + user.password);
@@ -76,9 +80,6 @@ public class LoginController extends Controller {
                     if(isLatchOn){
                         // Everything OK, we enter
                         Logger.debug("Latch is ON or is not paired");
-                        session("username", user.username);
-                        session("email", user.email);
-                        session("latchAccountId", user.latchAccountId);
                         return LatchController.blank();
                     }
                     // <Error> Tiene latch bloqueado
@@ -86,8 +87,16 @@ public class LoginController extends Controller {
                 }
             }
             Logger.debug("<Error> User can't login");
+            session().clear();
             return unauthorized(login.render(filledForm));
         }
     }
-  
+
+    /**
+     * Handle logout
+     * */
+    public static Result logout(){
+        session().clear();
+        return ok(index.render());
+    }
 }
