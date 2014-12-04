@@ -1,5 +1,9 @@
 package controllers;
 
+import com.elevenpaths.latch.Latch;
+import com.elevenpaths.latch.LatchResponse;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import models.datasource.UserDataSource;
 import models.entities.PairingKey;
 import models.entities.User;
@@ -18,6 +22,8 @@ public class LoginController extends Controller {
      */ 
     final static Form<User> loginForm = form(User.class, User.All.class);
     final static Form<PairingKey> pairingKeyForm = form(PairingKey.class);
+
+    static Config config = ConfigFactory.load("application");
   
     /**
      * Display a blank form.
@@ -56,13 +62,48 @@ public class LoginController extends Controller {
                 if (user.password.equals(filledForm.get().password)){
                     Logger.debug("Password correcto! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
 
-                    session("username", user.username);
-                    session("email", user.email);
-                    session("latchAccountId", user.latchAccountId);
+                    // Check latch
+                    boolean isLatchOn = true;
+                    String accountId = user.latchAccountId;
+                    if (!accountId.equals("") || accountId != null || !accountId.isEmpty()){
+                        String appId = config.getString("latch.appId");
+                        String secretKey = config.getString("latch.secretKey");
 
-                    return LatchController.blank();
+                        Latch latch = new Latch(appId, secretKey);
+                        LatchResponse response = latch.status(accountId);
+                        // Para controlar una opración, habría que cambiar la llamada status a : latch.operationStatus(accountID, "El id de la operation")
+
+                        String status = response.
+                                getData().
+                                get("operations").
+                                getAsJsonObject().
+                                get(appId).
+                                getAsJsonObject().
+                                get("status").getAsString();
+
+                        // Para operaciones: String status = response.getData().get("operations").getAsJsonObject().get("El id de la operation").getAsJsonObject().get("status").getAsString();
+
+                        Logger.debug("Status: " + status.toString());
+                        if(status.equals("off")){
+                            Logger.debug("<Error> [Checking status] Latch is OFF");
+                            isLatchOn = false;
+                        }
+                        Logger.debug("[Checking status] Latch is ON");
+                    }
+
+                    if(isLatchOn){
+                        // Everything OK, we enter
+                        Logger.debug("Latch is ON or is not paired");
+                        session("username", user.username);
+                        session("email", user.email);
+                        session("latchAccountId", user.latchAccountId);
+                        return LatchController.blank();
+                    }
+                    // <Error> Tiene latch bloqueado
+                    Logger.debug("<Error> Latch is OFF");
                 }
             }
+            Logger.debug("<Error> User can't login");
             return unauthorized(login.render(filledForm));
         }
     }
