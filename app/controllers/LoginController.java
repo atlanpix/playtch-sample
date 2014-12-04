@@ -32,39 +32,6 @@ public class LoginController extends Controller {
         return ok(login.render(loginForm));
     }
 
-    private static String checkLatchStatus(String appId){
-
-        UserDataSource userDataSource = new UserDataSource();
-        User user = userDataSource.getUser(session("username"));
-        String accountId = user.latchAccountId;
-
-        if (!accountId.equals("") || accountId != null || !accountId.isEmpty()){
-            LatchResponse response = LatchController.getLatch().status(accountId);
-
-            // Para controlar una opración, habría que cambiar la llamada status a :
-            // latch.operationStatus(accountID, "El id de la operation")
-            if (response.getData() != null) {
-                String status = response.
-                        getData().
-                        get("operations").
-                        getAsJsonObject().
-                        get(appId).
-                        getAsJsonObject().
-                        get("status").getAsString();
-
-                // Para operaciones: String status = response.getData().get("operations").getAsJsonObject().get("El id de la operation").getAsJsonObject().get("status").getAsString();
-                if (!status.equals("") || status != null || !status.isEmpty()){
-                    Logger.debug("Status: " + status.toString());
-                    return status;
-                }
-            } else {
-                // We can decide to block user if Latch server is off: return "off";
-                // But we are going to be allowed
-            }
-        }
-        return "on";
-    }
-
     /**
      * Handle the form submission.
      */
@@ -97,32 +64,14 @@ public class LoginController extends Controller {
 
                     // Check latch
                     boolean isLatchOn = true;
-                    String accountId = user.latchAccountId;
-                    if (!accountId.equals("") || accountId != null || !accountId.isEmpty()){
-                        String appId = config.getString("latch.appId");
-                        String secretKey = config.getString("latch.secretKey");
+                    String status = LatchController.checkLatchStatus(config.getString("latch.appId"));
 
-                        Latch latch = new Latch(appId, secretKey);
-                        LatchResponse response = latch.status(accountId);
-                        // Para controlar una opración, habría que cambiar la llamada status a : latch.operationStatus(accountID, "El id de la operation")
-
-                        String status = response.
-                                getData().
-                                get("operations").
-                                getAsJsonObject().
-                                get(appId).
-                                getAsJsonObject().
-                                get("status").getAsString();
-
-                        // Para operaciones: String status = response.getData().get("operations").getAsJsonObject().get("El id de la operation").getAsJsonObject().get("status").getAsString();
-
-                        Logger.debug("Status: " + status.toString());
-                        if(status.equals("off")){
-                            Logger.debug("<Error> [Checking status] Latch is OFF");
-                            isLatchOn = false;
-                        }
-                        Logger.debug("[Checking status] Latch is ON");
+                    Logger.debug("Status: " + status.toString());
+                    if(status.equals("off")){
+                        Logger.debug("<Error> [Checking status] Latch is OFF");
+                        isLatchOn = false;
                     }
+                    Logger.debug("[Checking status] Latch is ON");
 
                     if(isLatchOn){
                         // Everything OK, we enter
