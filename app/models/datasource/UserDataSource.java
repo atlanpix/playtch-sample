@@ -3,10 +3,15 @@ package models.datasource;
 import com.mongodb.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import controllers.SecurityController;
 import models.entities.*;
 import play.Logger;
+import play.api.libs.json.JsPath;
+import play.libs.Json;
 
 import java.net.UnknownHostException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,6 +22,7 @@ public class UserDataSource {
     public static MongoClient mongoClient;
     public static DB db ;
     static Config config = ConfigFactory.load("db");
+    static Config configSecurity = ConfigFactory.load("application");
 
     public static DBCollection connectDB() {
 
@@ -31,13 +37,22 @@ public class UserDataSource {
     }
 
     public static User insertIntoUser(User user) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, configSecurity.getInt("security.secretTokenExpirationLimit"));
+
         DBCollection coll = connectDB();
         BasicDBObject query = new BasicDBObject().
         append("username", user.username).
         append("email", user.email).
         append("password", user.password).
-        append("profile", user.profile).
-        append("latchAccountId", user.latchAccountId);
+        append("country", user.country).
+        append("address", user.address).
+        append("age", user.age).
+        append("latchAccountId", user.latchAccountId).
+        append("secretToken", SecurityController.createSecretToken()).
+        append("secretTokenExpiration", calendar.getTime());
 
         coll.insert(WriteConcern.SAFE,query);
 
@@ -51,8 +66,8 @@ public class UserDataSource {
         DBObject one = coll.findOne(query);
 
         if(one!=null) {
-            BasicDBObject updateQuery1 = new BasicDBObject().append("$set", new BasicDBObject().append("latchAccountId", latchAccountId));
-            coll.update(query, updateQuery1);
+            BasicDBObject updateQuery = new BasicDBObject().append("$set", new BasicDBObject().append("latchAccountId", latchAccountId));
+            coll.update(query, updateQuery);
         }
 
         mongoClient.close();
@@ -70,11 +85,30 @@ public class UserDataSource {
             return new User(String.valueOf(one.get("username")),
                     String.valueOf(one.get("email")),
                     String.valueOf(one.get("password")),
-                    (User.Profile) one.get("profile"),
-                    String.valueOf(one.get("latchAccountId")));
+                    String.valueOf(one.get("latchAccountId")),
+                    String.valueOf(one.get("secretToken")),
+                    (Date) one.get("secretTokenExpirationDate"));
         }
 
         return null;
     }
 
+    public static void updateSecretToken(String username){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, configSecurity.getInt("security.secretTokenExpirationLimit"));
+
+        DBCollection coll = connectDB();
+        BasicDBObject query = new BasicDBObject().append("username", username);
+        DBObject one = coll.findOne(query);
+
+        if(one!=null) {
+            BasicDBObject updateQuery = new BasicDBObject().append("$set", new BasicDBObject().
+                    append("secretToken", SecurityController.createSecretToken()).
+                    append("secretTokenExpiration", calendar.getTime()));
+            coll.update(query, updateQuery);
+        }
+
+        mongoClient.close();
+    }
 }

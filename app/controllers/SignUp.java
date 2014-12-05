@@ -27,8 +27,7 @@ public class SignUp extends Controller {
      */
     public static Result edit() {
         User existingUser = new User(
-            "fakeuser", "fake@gmail.com", "secret",
-            new User.Profile("France", null, 30)
+            "fakeuser", "fake@gmail.com", "secret"
         );
         return ok(form.render(signupForm.fill(existingUser)));
     }

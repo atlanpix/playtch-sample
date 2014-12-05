@@ -16,6 +16,8 @@ import views.html.*;
 import views.html.login.*;
 import views.html.latch.*;
 
+import java.util.Date;
+
 public class LoginController extends Controller {
     
     /**
@@ -80,6 +82,10 @@ public class LoginController extends Controller {
                     if(isLatchOn){
                         // Everything OK, we enter
                         Logger.debug("Latch is ON or is not paired");
+                        if (user.secretTokenExpiration == null || user.secretTokenExpiration.before(new Date())){
+                            Logger.debug("Update secretToken because it was past");
+                            userDataSource.updateSecretToken(user.username);
+                        }
                         return LatchController.blank();
                     }
                     // <Error> Tiene latch bloqueado
