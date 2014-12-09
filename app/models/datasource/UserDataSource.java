@@ -1,6 +1,7 @@
 package models.datasource;
 
 import com.mongodb.*;
+import com.mongodb.util.JSON;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import controllers.SecurityController;
@@ -47,9 +48,7 @@ public class UserDataSource {
         append("username", user.username).
         append("email", user.email).
         append("password", user.password).
-        append("country", user.country).
-        append("address", user.address).
-        append("age", user.age).
+        append("profile", JSON.parse(user.profile.toString())).
         append("latchAccountId", user.latchAccountId).
         append("secretToken", SecurityController.createSecretToken()).
         append("secretTokenExpiration", calendar.getTime());

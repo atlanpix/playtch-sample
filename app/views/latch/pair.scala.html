@@ -17,7 +17,8 @@
                 pairingKeyForm("key"),
                 '_label -> "Pairing key",
                 '_help -> "A pairing key must be 6 characters. ",
-                '_error -> pairingKeyForm.globalError
+                '_error -> pairingKeyForm.error("pairingError"),
+                '_showConstraints -> false
             )
 
         </fieldset>

@@ -46,20 +46,20 @@
             <legend>Contact information</legend>
             
             @select(
-                signupForm("country"),
+                signupForm("profile.country"),
                 options = options(entities.Countries.list),
                 '_default -> "--- Choose a country ---",
                 '_label -> "Country",
-                '_error -> signupForm("country").error.map(_.withMessage("Please select your country"))
+                '_error -> signupForm("profile.country").error.map(_.withMessage("Please select your country"))
             )
             
             @textarea(
-                signupForm("address"),
+                signupForm("profile.address"),
                 '_label -> "Address", 'cols -> 50
             )
             
             @inputText(
-                signupForm("age"),
+                signupForm("profile.age"),
                 '_label -> "Age", 'class -> "mini",
                 '_showConstraints -> false
             )

@@ -21,6 +21,7 @@ GET     /contacts/fakecontact       controllers.Contacts.edit()
 POST    /contacts                   controllers.Contacts.submit()
 
 # Latch
+GET     /latch                      controllers.LatchController.blank()
 POST    /pair                       controllers.LatchController.pair()
 POST    /unpair                     controllers.LatchController.unpair()
 

@@ -37,7 +37,8 @@ public class LatchController extends Controller {
         UserDataSource userDataSource = new UserDataSource();
         User user = userDataSource.getUser(session("username"));
         if (user != null){
-            if (!user.latchAccountId.equals("") || user.latchAccountId != null || !user.latchAccountId.isEmpty()){
+            Logger.debug("LATCH ACCOUNT ID: " + user.latchAccountId);
+            if (!(user.latchAccountId.equals("null") || user.latchAccountId.equals(""))){
                 return ok(views.html.latch.unpair.render());
             } else {
                 return ok(views.html.latch.pair.render(pairingKeyForm));
@@ -61,24 +62,30 @@ public class LatchController extends Controller {
 
         String accountId = user.latchAccountId;
 
-        if (!accountId.equals("") || accountId != null || !accountId.isEmpty()){
-            LatchResponse response = LatchController.getLatch().status(accountId);
+        if (!(accountId.equals("null") || accountId.equals(""))){
+            Latch latch = LatchController.getLatch();
+            if (latch != null) {
+                LatchResponse response = latch.status(accountId);
 
-            // Para controlar una opración, habría que cambiar la llamada status a :
-            // latch.operationStatus(accountID, "El id de la operation")
-            if (response.getData() != null) {
-                String status = response.
-                        getData().
-                        get("operations").
-                        getAsJsonObject().
-                        get(appId).
-                        getAsJsonObject().
-                        get("status").getAsString();
+                // Para controlar una opración, habría que cambiar la llamada status a :
+                // latch.operationStatus(accountID, "El id de la operation")
+                if (response.getData() != null) {
+                    String status = response.
+                            getData().
+                            get("operations").
+                            getAsJsonObject().
+                            get(appId).
+                            getAsJsonObject().
+                            get("status").getAsString();
 
-                // Para operaciones: String status = response.getData().get("operations").getAsJsonObject().get("El id de la operation").getAsJsonObject().get("status").getAsString();
-                if (!status.equals("") || status != null || !status.isEmpty()){
-                    Logger.debug("Status: " + status.toString());
-                    return status;
+                    // Para operaciones: String status = response.getData().get("operations").getAsJsonObject().get("El id de la operation").getAsJsonObject().get("status").getAsString();
+                    if (!status.equals("") || status != null || !status.isEmpty()) {
+                        Logger.debug("Status: " + status.toString());
+                        return status;
+                    }
+                } else {
+                    // We can decide to block user if Latch server is off: return "off";
+                    // But we are going to be allowed
                 }
             } else {
                 // We can decide to block user if Latch server is off: return "off";
@@ -124,6 +131,12 @@ public class LatchController extends Controller {
                     Logger.debug("<Error> Pair fail");
                     return badRequest(views.html.latch.pair.render(filledForm));
                 }
+            } else {
+                int errorCode = response.toJSON().get("error").getAsJsonObject().get("code").getAsInt();
+                String errorMessage = response.toJSON().get("error").getAsJsonObject().get("message").getAsString();
+                Logger.debug(errorMessage);
+                filledForm.reject("pairingError", errorMessage);
+                filledForm.reject("pairingError");
             }
         }
         return badRequest(views.html.latch.pair.render(filledForm));

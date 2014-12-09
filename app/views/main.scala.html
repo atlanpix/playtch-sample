@@ -4,7 +4,7 @@
 
 <html>
     <head>
-        <title>Form samples</title>
+        <title>cuaQea Latch example for Play Framework</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
@@ -17,11 +17,16 @@
                 <div class="container">
                     <a class="brand" href="@routes.Application.index()">cuaQea Latch example</a>
                     <ul class="nav">
+                        @if(!session.get("email")) {
                         <li class="@("active".when(nav == "login"))">
 	                        <a href="@routes.LoginController.blank()">Login</a>
 	                    </li>
                         <li class="@("active".when(nav == "signup"))">
                             <a href="@routes.SignUp.blank()">Sign up</a>
+                        </li>
+                        } else {
+                        <li class="@("active".when(nav == "latch"))">
+                            <a href="@routes.LatchController.blank()">Latch (pair/unpair)</a>
                         </li>
                         <li class="@("active".when(nav == "contact"))">
                             <a href="@routes.Contacts.blank()">Profile</a>
@@ -29,6 +34,7 @@
                         <li class="@("active".when(nav == "logout"))">
                             <a href="@routes.LoginController.logout()">Logout</a>
                         </li>
+                        }
                     </ul>
                 </div>
             </div>
