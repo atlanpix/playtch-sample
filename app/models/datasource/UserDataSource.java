@@ -82,12 +82,18 @@ public class UserDataSource {
         if (one != null) {
             Logger.debug("Consulta no es null");
             mongoClient.close();
-            String profile = one.get("profile").toString();
-            Logger.debug("PROFILE JSON: "+profile);
+            User.Profile profile = new User.Profile();
+            if (one.get("profile") != null){
+                String profileStr = one.get("profile").toString();
+
+                if (profile != null) {
+                    profile = new Gson().fromJson(profileStr , User.Profile.class);
+                }
+            }
             return new User(String.valueOf(one.get("username")),
                     String.valueOf(one.get("email")),
                     String.valueOf(one.get("password")),
-                    new Gson().fromJson(profile , User.Profile.class),
+                    profile,
                     String.valueOf(one.get("latchAccountId")),
                     String.valueOf(one.get("secretToken")),
                     (Date) one.get("secretTokenExpirationDate"));

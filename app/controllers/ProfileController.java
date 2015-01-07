@@ -33,10 +33,10 @@ public class ProfileController extends Controller {
         }
         // User doesn't exist, so logout and go to index
         Logger.error("User '"+session("username")+"' doesn't exist");
-        session().clear();
-        return ok(index.render());
+        /*session().clear();
+        return ok(index.render());*/
 
-        //return ok(form.render(profileForm.fill(new User()))); // In case you want to show clear profile form page
+        return ok(form.render(profileForm.fill(new User()))); // In case you want to show clear profile form page
     }
 
     public static Result edit() {
