@@ -28,8 +28,11 @@
                         <li class="@("active".when(nav == "latch"))">
                             <a href="@routes.LatchController.blank()">Latch (pair/unpair)</a>
                         </li>
-                        <li class="@("active".when(nav == "contact"))">
-                            <a href="@routes.Contacts.blank()">Profile</a>
+                        <!--<li class="@("active".when(nav == "contact"))">
+                            <a href="@routes.Contacts.blank()">Contacs</a>
+                        </li>-->
+                        <li class="@("active".when(nav == "profile"))">
+                            <a href="@routes.ProfileController.blank()">Profile</a>
                         </li>
                         <li class="@("active".when(nav == "logout"))">
                             <a href="@routes.LoginController.logout()">Logout</a>

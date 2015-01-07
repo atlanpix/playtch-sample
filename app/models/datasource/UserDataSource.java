@@ -1,5 +1,6 @@
 package models.datasource;
 
+import com.google.gson.Gson;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import com.typesafe.config.Config;
@@ -81,9 +82,12 @@ public class UserDataSource {
         if (one != null) {
             Logger.debug("Consulta no es null");
             mongoClient.close();
+            String profile = one.get("profile").toString();
+            Logger.debug("PROFILE JSON: "+profile);
             return new User(String.valueOf(one.get("username")),
                     String.valueOf(one.get("email")),
                     String.valueOf(one.get("password")),
+                    new Gson().fromJson(profile , User.Profile.class),
                     String.valueOf(one.get("latchAccountId")),
                     String.valueOf(one.get("secretToken")),
                     (Date) one.get("secretTokenExpirationDate"));

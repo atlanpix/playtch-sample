@@ -20,6 +20,11 @@ GET     /contacts                   controllers.Contacts.blank()
 GET     /contacts/fakecontact       controllers.Contacts.edit()
 POST    /contacts                   controllers.Contacts.submit()
 
+# Profile
+GET     /profile                   controllers.ProfileController.blank()
+GET     /profile/fakeuser          controllers.ProfileController.edit()
+POST    /profile                   controllers.ProfileController.submit()
+
 # Latch
 GET     /latch                      controllers.LatchController.blank()
 POST    /pair                       controllers.LatchController.pair()
