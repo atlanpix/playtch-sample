@@ -21,9 +21,9 @@ GET     /contacts/fakecontact       controllers.Contacts.edit()
 POST    /contacts                   controllers.Contacts.submit()
 
 # Profile
-GET     /profile                   controllers.ProfileController.blank()
-GET     /profile/fakeuser          controllers.ProfileController.edit()
-POST    /profile                   controllers.ProfileController.submit()
+GET     /profile                    controllers.ProfileController.blank()
+GET     /profile/fakeuser           controllers.ProfileController.edit()
+POST    /profile                    controllers.ProfileController.submit()
 
 # Latch
 GET     /latch                      controllers.LatchController.blank()

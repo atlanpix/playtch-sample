@@ -58,7 +58,16 @@ public class ProfileController extends Controller {
             return badRequest(form.render(filledForm));
         } else {
             User created = filledForm.get();
-            return ok(summary.render(created));
+            UserDataSource userDataSource = new UserDataSource();
+            User newUser = userDataSource.getUser(created.username);
+            if (created.username.equals(session("username")) || newUser == null){
+                userDataSource.updateUser(session("username"),created);
+                session("username",created.username);
+                return ok(summary.render(created));
+            }
+            filledForm.error("Username '"+created.username+"' is already taken");
+            filledForm.reject("username", "Username '"+created.username+"' is already taken");
+            return badRequest(form.render(filledForm));
         }
     }
 }

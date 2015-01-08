@@ -120,4 +120,21 @@ public class UserDataSource {
 
         mongoClient.close();
     }
+
+    public static void updateUser(String username, User user){
+        DBCollection coll = connectDB();
+        BasicDBObject query = new BasicDBObject().append("username", username);
+        DBObject one = coll.findOne(query);
+
+        if(one!=null) {
+            BasicDBObject updateQuery = new BasicDBObject().append("$set", new BasicDBObject().
+                    append("username", user.username).
+                    append("email", user.email).
+                    append("password",user.password).
+                    append("profile",JSON.parse(user.profile.toString())));
+            coll.update(query, updateQuery);
+        }
+
+        mongoClient.close();
+    }
 }
