@@ -8,6 +8,8 @@ import models.datasource.UserDataSource;
 import models.entities.PairingKey;
 import models.entities.User;
 import play.Logger;
+import play.data.validation.Validation;
+import play.data.validation.ValidationError;
 import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
@@ -66,8 +68,6 @@ public class LoginController extends Controller {
                 session("latchAccountId", user.latchAccountId);
                 Logger.info("User no es null! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
                 if (user.password.equals(filledForm.get().password)){
-                    Logger.debug("Password correcto! Password introducido: " + filledForm.get().password + "Password del user: " + user.password);
-
                     // Check latch
                     boolean isLatchOn = true;
                     //String status = LatchController.checkLatchStatus(config.getString("latch.appId"));
@@ -95,6 +95,7 @@ public class LoginController extends Controller {
             }
             Logger.debug("<Error> User can't login");
             session().clear();
+            filledForm.reject("username","¡Error with login credentials!");
             return unauthorized(login.render(filledForm));
         }
     }

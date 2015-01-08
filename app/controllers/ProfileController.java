@@ -1,5 +1,7 @@
 package controllers;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import models.datasource.UserDataSource;
 import models.entities.User;
 import play.Logger;
@@ -12,6 +14,8 @@ import static play.data.Form.form;
 import views.html.profile.*;
 import views.html.index;
 
+import java.util.Date;
+
 /**
  * Created by Enri on 7/1/15.
  */
@@ -22,6 +26,8 @@ public class ProfileController extends Controller {
      */
     final static Form<User> profileForm = form(User.class);
 
+    static Config config = ConfigFactory.load("application");
+    
     /**
      * Display a blank form.
      */
@@ -57,16 +63,37 @@ public class ProfileController extends Controller {
         if(filledForm.hasErrors()) {
             return badRequest(form.render(filledForm));
         } else {
-            User created = filledForm.get();
-            UserDataSource userDataSource = new UserDataSource();
-            User newUser = userDataSource.getUser(created.username);
-            if (created.username.equals(session("username")) || newUser == null){
-                userDataSource.updateUser(session("username"),created);
-                session("username",created.username);
-                return ok(summary.render(created));
+            // Check latch
+            boolean isLatchOn = true;
+            //String status = LatchController.checkLatchStatus(config.getString("latch.appId"));
+            String status = LatchController.checkLatchOperationStatus(config.getString("latch.editProfileOperationId"));
+
+            Logger.debug("Status: " + status.toString());
+            if(status.equals("off")){
+                Logger.debug("<Error> [Checking status] Latch is OFF");
+                isLatchOn = false;
             }
-            filledForm.error("Username '"+created.username+"' is already taken");
-            filledForm.reject("username", "Username '"+created.username+"' is already taken");
+            Logger.debug("[Checking status] Latch is ON");
+
+            if(isLatchOn){
+                // Everything OK, we enter
+                User created = filledForm.get();
+                UserDataSource userDataSource = new UserDataSource();
+                User newUser = userDataSource.getUser(created.username);
+                if (created.username.equals(session("username")) || newUser == null){
+                    userDataSource.updateUser(session("username"),created);
+                    session("username",created.username);
+                    return ok(summary.render(created));
+                }
+                filledForm.error("Username '"+created.username+"' is already taken");
+                filledForm.reject("username", "Username '"+created.username+"' is already taken");
+                return badRequest(form.render(filledForm));
+            }
+            // <Error> Tiene latch bloqueado
+            Logger.debug("<Error> Latch is OFF");
+
+            filledForm.error("-");
+            filledForm.reject("username", "Error while editing your profile");
             return badRequest(form.render(filledForm));
         }
     }
