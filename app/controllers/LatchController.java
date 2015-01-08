@@ -95,6 +95,43 @@ public class LatchController extends Controller {
         return "on";
     }
 
+    public static String checkLatchOperationStatus(String operationId){
+
+        UserDataSource userDataSource = new UserDataSource();
+        User user = userDataSource.getUser(session("username"));
+
+        String accountId = user.latchAccountId;
+
+        if (!(accountId.equals("null") || accountId.equals(""))){
+            Latch latch = LatchController.getLatch();
+            if (latch != null) {
+                LatchResponse response = latch.operationStatus(accountId, operationId);
+
+                if (response.getData() != null) {
+                    String status = response.
+                            getData().
+                            get("operations").
+                            getAsJsonObject().
+                            get(operationId).
+                            getAsJsonObject().
+                            get("status").getAsString();
+
+                    if (!status.equals("") || status != null || !status.isEmpty()) {
+                        Logger.debug("Status: " + status.toString());
+                        return status;
+                    }
+                } else {
+                    // We can decide to block user if Latch server is off: return "off";
+                    // But we are going to be allowed
+                }
+            } else {
+                // We can decide to block user if Latch server is off: return "off";
+                // But we are going to be allowed
+            }
+        }
+        return "on";
+    }
+
     /**
      * Handle the pair action.
      */
