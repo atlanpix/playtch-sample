@@ -27,7 +27,7 @@ public class ProfileController extends Controller {
     final static Form<User> profileForm = form(User.class);
 
     static Config config = ConfigFactory.load("application");
-    
+
     /**
      * Display a blank form.
      */
