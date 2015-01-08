@@ -70,7 +70,8 @@ public class LoginController extends Controller {
 
                     // Check latch
                     boolean isLatchOn = true;
-                    String status = LatchController.checkLatchStatus(config.getString("latch.appId"));
+                    //String status = LatchController.checkLatchStatus(config.getString("latch.appId"));
+                    String status = LatchController.checkLatchOperationStatus(config.getString("latch.loginOperationId"));
 
                     Logger.debug("Status: " + status.toString());
                     if(status.equals("off")){
