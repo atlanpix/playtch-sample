@@ -8,31 +8,30 @@
 }
 
 @main(title, nav = "login") {
-    
     @helper.form(action = routes.LoginController.submit) {
         
         <fieldset>
             <legend>Enter your personal details</legend>
-            
-            @inputText(
-                loginForm("username"),
-                '_label -> "Username", 
-                '_help -> "",
-                '_error -> loginForm.globalError
-            )
-            
-            @inputPassword(
-                loginForm("password"),
-                '_label -> "Password",
-                '_help -> "A password must be at least 6 characters. "
-            )
-            
+            <div class="col-xs-offset-3">
+                @inputText(
+                    loginForm("username"),
+                    '_label -> "Username",
+                    '_help -> "",
+                    '_error -> loginForm.globalError
+                )
+
+                @inputPassword(
+                    loginForm("password"),
+                    '_label -> "Password",
+                    '_help -> "A password must be at least 6 characters. "
+                )
+
+                <div class="actions">
+                    <input type="submit" class="btn btn-success" value="Login">
+                    <a href="@routes.Application.index" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
         </fieldset>
-        
-        <div class="actions">
-            <input type="submit" class="btn primary" value="Login">
-            <a href="@routes.Application.index" class="btn">Cancel</a>
-        </div>
         
     }
     

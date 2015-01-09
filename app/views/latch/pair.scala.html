@@ -11,7 +11,7 @@
     @helper.form(action = routes.LatchController.pair) {
 
         <fieldset>
-            <legend>Enter your personal details</legend>
+            <legend>Enter your latch pairing key</legend>
 
             @inputText(
                 pairingKeyForm("key"),
@@ -23,7 +23,7 @@
         </fieldset>
 
         <div class="actions">
-            <input type="submit" class="btn primary" value="Pair">
+            <input type="submit" class="btn btn-success" value="Pair">
         </div>
     }
 }
