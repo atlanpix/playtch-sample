@@ -1,16 +1,12 @@
 package controllers;
 
 import actions.LatchCheckOperationStatus;
-import com.elevenpaths.latch.Latch;
-import com.elevenpaths.latch.LatchResponse;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import models.datasource.UserDataSource;
 import models.entities.PairingKey;
 import models.entities.User;
 import play.Logger;
-import play.data.validation.Validation;
-import play.data.validation.ValidationError;
 import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
@@ -21,9 +17,6 @@ import views.html.login.*;
 import views.html.latch.*;
 
 import java.util.Date;
-
-import play.mvc.*;
-import models.datasource.UserDataSource;
 
 public class LoginController extends Controller {
     
@@ -82,7 +75,7 @@ public class LoginController extends Controller {
                             Logger.debug("<Warning> Update secretToken because it was past");
                             userDataSource.updateSecretToken(user.username);
                         }
-                        return LatchController.blank();
+                        return PairController.blank();
                     }
                 }
             }
