@@ -15,6 +15,7 @@ import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
 
+import utils.factories.LatchIdFactory;
 import views.html.*;
 import views.html.login.*;
 import views.html.latch.*;
@@ -45,7 +46,7 @@ public class LoginController extends Controller {
     /**
      * Handle the form submission.
      */
-    @LatchCheckOperationStatus(value = "xjbieia3cvVVdv49MZar", latchId = UserDataSource.class)
+    @LatchCheckOperationStatus(value = "xjbieia3cvVVdv49MZar", latchId = LatchIdFactory.class)
     public static Result submit() {
         Form<User> filledForm = loginForm.bindFromRequest();
         Boolean isLatchOn = (Boolean) Http.Context.current().args.get("status");

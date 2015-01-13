@@ -1,5 +1,6 @@
 package controllers;
 
+import actions.LatchPair;
 import com.elevenpaths.latch.Latch;
 import com.elevenpaths.latch.LatchResponse;
 import com.typesafe.config.Config;
@@ -7,12 +8,14 @@ import com.typesafe.config.ConfigFactory;
 import models.datasource.UserDataSource;
 import models.entities.PairingKey;
 import models.entities.User;
+import pairingkey.ObtainPairingKey;
 import play.Logger;
 import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
 import com.google.gson.JsonObject;
 
+import utils.factories.PairingKeyFactory;
 import views.html.login.*;
 import views.html.latch.*;
 
@@ -135,8 +138,9 @@ public class LatchController extends Controller {
     /**
      * Handle the pair action.
      */
-    
+    @LatchPair(value = "", pairingKey = PairingKeyFactory.class)
     public static Result pair() {
+        String accountId = (String) Http.Context.current().args.get("status");
 
         Form<PairingKey> filledForm = pairingKeyForm.bindFromRequest();
 
@@ -148,36 +152,17 @@ public class LatchController extends Controller {
         if(filledForm.hasErrors()) {
             return badRequest(views.html.latch.pair.render(filledForm));
         } else {
-            // REMEMBER: sudo keytool -import -noprompt -trustcacerts -alias CACertificate -file ca.pem -keystore "/Library/Java/JavaVirtualMachines/jdk1.7.0_67.jdk/Contents/Home/jre/lib/security/cacerts" -storepass changeit
-            Latch latch = LatchController.getLatch();
-            Logger.debug("Key: "+filledForm.get().key);
-            LatchResponse response = latch.pair(filledForm.get().key);
-
-            if (response != null && response.getError() == null) {
-
-                String json = response.toJSON().toString();
-
-                Logger.debug("JSON " + json);
-                if (response.getData() != null) {
-                    String accountId = response.getData().get("accountId").getAsString();
-                    UserDataSource userDataSource = new UserDataSource();
-                    User user = userDataSource.getUser(session("username"));
-                    userDataSource.updateLatchAccountId(user.username, accountId);
-                    Logger.debug("Pair success!");
-                    return ok(views.html.latch.unpair.render());
-                } else {
-                    Logger.debug("<Error> Pair fail");
-                    return badRequest(views.html.latch.pair.render(filledForm));
-                }
+            if (accountId != null) {
+                UserDataSource userDataSource = new UserDataSource();
+                User user = userDataSource.getUser(session("username"));
+                userDataSource.updateLatchAccountId(user.username, accountId);
+                Logger.debug("Pair success!");
+                return ok(views.html.latch.unpair.render());
             } else {
-                int errorCode = response.toJSON().get("error").getAsJsonObject().get("code").getAsInt();
-                String errorMessage = response.toJSON().get("error").getAsJsonObject().get("message").getAsString();
-                Logger.debug(errorMessage);
-                filledForm.reject("pairingError", errorMessage);
-                filledForm.reject("pairingError");
+                Logger.debug("<Error> Pair fail");
+                return badRequest(views.html.latch.pair.render(filledForm));
             }
         }
-        return badRequest(views.html.latch.pair.render(filledForm));
     }
 
     /**

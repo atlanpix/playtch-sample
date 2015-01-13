@@ -13,6 +13,7 @@ import play.mvc.Result;
 
 import static play.data.Form.form;
 
+import utils.factories.LatchIdFactory;
 import views.html.profile.*;
 import views.html.index;
 
@@ -59,7 +60,7 @@ public class ProfileController extends Controller {
     /**
      * Handle the form submission.
      */
-    @LatchCheckOperationStatus(value = "VRDuX9mVpYKzzgtxiv3y", latchId = UserDataSource.class)
+    @LatchCheckOperationStatus(value = "VRDuX9mVpYKzzgtxiv3y", latchId = LatchIdFactory.class)
     public static Result submit() {
         Boolean isLatchOn = (Boolean) Http.Context.current().args.get("status");
 

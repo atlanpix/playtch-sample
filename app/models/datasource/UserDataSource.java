@@ -22,7 +22,7 @@ import latchid.ObtainLatchId;
 /**
  * Created by Nerea on 15/10/2014.
  */
-public class UserDataSource implements ObtainLatchId {
+public class UserDataSource {
 
     public static MongoClient mongoClient;
     public static DB db ;
@@ -141,21 +141,4 @@ public class UserDataSource implements ObtainLatchId {
         mongoClient.close();
     }
 
-    public String getLatchId(String... needs) {
-        return null;
-    }
-
-    public String getLatchId(Http.Context context) {
-        System.out.println("getLatchId:context");
-        String userId = context.request().body().asFormUrlEncoded().get("username")[0].toString();
-        UserDataSource userDataSource = new UserDataSource();
-        User user = userDataSource.getUser(userId);
-
-        if (!(user.latchAccountId.equals("null") || user.latchAccountId.equals(""))){
-            System.out.println("getLatchId:user.latchAccountId - "+user.latchAccountId);
-            return user.latchAccountId;
-        }
-        System.out.println("getLatchId:No tiene latchAccountId");
-        return null;
-    }
 }
