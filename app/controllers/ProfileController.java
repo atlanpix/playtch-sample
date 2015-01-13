@@ -1,5 +1,6 @@
 package controllers;
 
+import actions.LatchCheckOperationStatus;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import models.datasource.UserDataSource;
@@ -7,6 +8,7 @@ import models.entities.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 
 import static play.data.Form.form;
@@ -57,7 +59,10 @@ public class ProfileController extends Controller {
     /**
      * Handle the form submission.
      */
+    @LatchCheckOperationStatus(value = "VRDuX9mVpYKzzgtxiv3y", latchId = UserDataSource.class)
     public static Result submit() {
+        Boolean isLatchOn = (Boolean) Http.Context.current().args.get("status");
+
         Form<User> filledForm = profileForm.bindFromRequest();
 
         // Check repeated password
@@ -68,17 +73,6 @@ public class ProfileController extends Controller {
         if(filledForm.hasErrors()) {
             return badRequest(form.render(filledForm));
         } else {
-            // Check latch
-            boolean isLatchOn = true;
-            //String status = LatchController.checkLatchStatus(config.getString("latch.appId"));
-            String status = LatchController.checkLatchOperationStatus(config.getString("latch.editProfileOperationId"));
-
-            Logger.debug("Status: " + status.toString());
-            if(status.equals("off")){
-                Logger.debug("<Error> [Checking status] Latch is OFF");
-                isLatchOn = false;
-            }
-            Logger.debug("[Checking status] Latch is ON");
 
             if(isLatchOn){
                 // Everything OK, we enter

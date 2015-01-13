@@ -99,7 +99,7 @@ public class UserDataSource implements ObtainLatchId {
                     profile,
                     String.valueOf(one.get("latchAccountId")),
                     String.valueOf(one.get("secretToken")),
-                    (Date) one.get("secretTokenExpirationDate"));
+                    (Date) one.get("secretTokenExpiration"));
         }
 
         return null;
@@ -146,16 +146,16 @@ public class UserDataSource implements ObtainLatchId {
     }
 
     public String getLatchId(Http.Context context) {
-        Logger.debug("getLatchID....");
+        System.out.println("getLatchId:context");
         String userId = context.request().body().asFormUrlEncoded().get("username")[0].toString();
         UserDataSource userDataSource = new UserDataSource();
         User user = userDataSource.getUser(userId);
 
         if (!(user.latchAccountId.equals("null") || user.latchAccountId.equals(""))){
-            Logger.debug("user.latchAccountId - "+user.latchAccountId);
+            System.out.println("getLatchId:user.latchAccountId - "+user.latchAccountId);
             return user.latchAccountId;
         }
-        Logger.debug("No tiene latchAccountId");
+        System.out.println("getLatchId:No tiene latchAccountId");
         return null;
     }
 }

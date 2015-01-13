@@ -26,7 +26,8 @@ libraryDependencies ++= Seq(
   "org.testng" % "testng" % "6.8.8",
   "com.google.code.gson" % "gson" % "2.3.1",
   "com.ning" % "async-http-client" % "1.7.19",
-  "mylogger" % "mylogger_2.10" % "1.3"
+  "com.cuaqea.playtch" %% "playtch-latch4play" % "1.0"
+  //"mylogger" % "mylogger_2.10" % "1.3"
 )
 
 playJavaSettings

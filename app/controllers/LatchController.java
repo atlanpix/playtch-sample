@@ -135,6 +135,7 @@ public class LatchController extends Controller {
     /**
      * Handle the pair action.
      */
+    
     public static Result pair() {
 
         Form<PairingKey> filledForm = pairingKeyForm.bindFromRequest();
