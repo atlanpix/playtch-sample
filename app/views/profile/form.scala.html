@@ -19,10 +19,11 @@
         
         <fieldset>
             <legend>Access information</legend>
-            
+
             @inputText(
                 userForm("username"),
-                '_label -> "Username"
+                '_label -> "Username",
+                'readonly -> "readonly"
             )
             
             @inputText(
@@ -30,7 +31,7 @@
                 '_label -> "E-mail"
             )
             
-            @inputText(
+            @inputPassword(
                 userForm("password"),
                 '_label -> "Password"
             )

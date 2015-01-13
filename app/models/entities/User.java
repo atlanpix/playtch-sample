@@ -8,7 +8,7 @@ import play.data.validation.Constraints.*;
 import java.io.Serializable;
 import java.util.Date;
 
-public class User {
+public class User{
 
     public interface All {}
 

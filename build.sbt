@@ -25,7 +25,8 @@ libraryDependencies ++= Seq(
   "com.notnoop.apns" % "apns" % "0.2.3",
   "org.testng" % "testng" % "6.8.8",
   "com.google.code.gson" % "gson" % "2.3.1",
-  "com.ning" % "async-http-client" % "1.7.19"
+  "com.ning" % "async-http-client" % "1.7.19",
+  "mylogger" % "mylogger_2.10" % "1.3"
 )
 
 playJavaSettings

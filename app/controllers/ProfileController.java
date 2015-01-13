@@ -60,6 +60,11 @@ public class ProfileController extends Controller {
     public static Result submit() {
         Form<User> filledForm = profileForm.bindFromRequest();
 
+        // Check repeated password
+        if(filledForm.field("password").valueOr("").isEmpty()) {
+            filledForm.reject("password", "Enter a valid password");
+        }
+
         if(filledForm.hasErrors()) {
             return badRequest(form.render(filledForm));
         } else {

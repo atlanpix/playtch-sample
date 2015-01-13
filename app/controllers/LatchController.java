@@ -218,7 +218,8 @@ public class LatchController extends Controller {
             return
         }
 
-    }
+    }*/
+    /*
     public static function checkOtp(){
         self::checkIfAlmostAuthenticated();
         $storeOtp = DBHelper::getAndRemoveOtp($_SESSION["userId"]);

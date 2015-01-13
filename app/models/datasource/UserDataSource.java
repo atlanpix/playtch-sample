@@ -10,16 +10,19 @@ import models.entities.*;
 import play.Logger;
 import play.api.libs.json.JsPath;
 import play.libs.Json;
+import play.mvc.Http;
 
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import latchid.ObtainLatchId;
+
 /**
  * Created by Nerea on 15/10/2014.
  */
-public class UserDataSource {
+public class UserDataSource implements ObtainLatchId {
 
     public static MongoClient mongoClient;
     public static DB db ;
@@ -136,5 +139,23 @@ public class UserDataSource {
         }
 
         mongoClient.close();
+    }
+
+    public String getLatchId(String... needs) {
+        return null;
+    }
+
+    public String getLatchId(Http.Context context) {
+        Logger.debug("getLatchID....");
+        String userId = context.request().body().asFormUrlEncoded().get("username")[0].toString();
+        UserDataSource userDataSource = new UserDataSource();
+        User user = userDataSource.getUser(userId);
+
+        if (!(user.latchAccountId.equals("null") || user.latchAccountId.equals(""))){
+            Logger.debug("user.latchAccountId - "+user.latchAccountId);
+            return user.latchAccountId;
+        }
+        Logger.debug("No tiene latchAccountId");
+        return null;
     }
 }
