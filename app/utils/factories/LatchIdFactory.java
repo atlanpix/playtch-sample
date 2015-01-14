@@ -25,10 +25,12 @@ public class LatchIdFactory implements ObtainLatchId {
         // Get full User by username
         User user = userDataSource.getUser(userId);
 
-        // Check if user is paired
-        if (!(user.latchAccountId.equals("null") || user.latchAccountId.equals(""))){
-            // If paired, return its accountId
-            return user.latchAccountId;
+        if (user != null) {
+            // Check if user is paired
+            if (!(user.latchAccountId.equals("null") || user.latchAccountId.equals(""))) {
+                // If paired, return its accountId
+                return user.latchAccountId;
+            }
         }
         // If not, returns null
         return null;
