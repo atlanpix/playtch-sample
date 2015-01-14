@@ -127,7 +127,7 @@ public class PairController extends Controller {
             }
         }
         // In other case, show unpair view
-        return badRequest(views.html.latch.unpair.render(filledForm));
+        return badRequest(views.html.latch.unpair.render());
     }
 
 }
