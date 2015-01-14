@@ -6,3 +6,4 @@ tmp
 .idea
 .settings
 *.log
+.idea_modules

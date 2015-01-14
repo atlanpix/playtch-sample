@@ -46,7 +46,7 @@ public class LoginController extends Controller {
      * First argument of notation is the latch operation id and the second is the accountId getting with LatchIdFactory
      * @return A Result
      */
-    @LatchCheckOperationStatus(value = "LOGINOPERATIONID", latchId = LatchIdFactory.class)
+    @LatchCheckOperationStatus(value = "BQVu34yBVAPw4uqBQdL2", latchId = LatchIdFactory.class)
     public static Result submit() {
         Form<User> filledForm = loginForm.bindFromRequest();
 

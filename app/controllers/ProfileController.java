@@ -63,7 +63,7 @@ public class ProfileController extends Controller {
      * Use LatchCheckOperationStatus notation to check if actual user can perform that action.
      * @return A result view
      */
-    @LatchCheckOperationStatus(value = "EDITOPERATIONID", latchId = LatchIdFactory.class)
+    @LatchCheckOperationStatus(value = "AtNcfVkhEWWGNFZw4y2H", latchId = LatchIdFactory.class)
     public static Result submit() {
         // Get status from the Notation output argument and assign that value to isLatchOn
         Boolean isLatchOn = (Boolean) Http.Context.current().args.get("status");
