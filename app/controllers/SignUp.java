@@ -8,6 +8,10 @@ import static play.data.Form.*;
 
 import views.html.signup.*;
 
+/**
+ * Controller for signup
+ * @author Enrique Ismael Mendoza Robaina (enriquemendozarobaina@gmail.com)
+ */
 public class SignUp extends Controller {
     
     /**
@@ -17,13 +21,15 @@ public class SignUp extends Controller {
   
     /**
      * Display a blank form.
-     */ 
+     * @return A Result with default signupForm page
+     */
     public static Result blank() {
         return ok(form.render(signupForm));
     }
-  
+
     /**
      * Display a form pre-filled with an existing account.
+     * @return A signupForm filled
      */
     public static Result edit() {
         User existingUser = new User(
@@ -31,9 +37,10 @@ public class SignUp extends Controller {
         );
         return ok(form.render(signupForm.fill(existingUser)));
     }
-  
+
     /**
-     * Handle the form submission.
+     * Handle the form submission. Check if fields are right or not.
+     * @return A Result with a resume of new user information if everything went ok, or the form if not
      */
     public static Result submit() {
         Form<User> filledForm = signupForm.bindFromRequest();
@@ -61,6 +68,7 @@ public class SignUp extends Controller {
             return badRequest(form.render(filledForm));
         } else {
             UserDataSource userDataSource = new UserDataSource();
+            // Insert new user in the database
             User created = userDataSource.insertIntoUser(filledForm.get());
             return ok(summary.render(created));
         }

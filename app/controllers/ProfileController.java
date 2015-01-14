@@ -20,7 +20,8 @@ import views.html.index;
 import java.util.Date;
 
 /**
- * Created by Enri on 7/1/15.
+ * Controller for profile
+ * @author Enrique Ismael Mendoza Robaina (enriquemendozarobaina@gmail.com)
  */
 public class ProfileController extends Controller {
 
@@ -59,41 +60,54 @@ public class ProfileController extends Controller {
 
     /**
      * Handle the form submission.
+     * Use LatchCheckOperationStatus notation to check if actual user can perform that action.
+     * @return A result view
      */
     @LatchCheckOperationStatus(value = "VRDuX9mVpYKzzgtxiv3y", latchId = LatchIdFactory.class)
     public static Result submit() {
+        // Get status from the Notation output argument and assign that value to isLatchOn
         Boolean isLatchOn = (Boolean) Http.Context.current().args.get("status");
 
         Form<User> filledForm = profileForm.bindFromRequest();
 
-        // Check repeated password
+        // Check password
         if(filledForm.field("password").valueOr("").isEmpty()) {
             filledForm.reject("password", "Enter a valid password");
         }
 
         if(filledForm.hasErrors()) {
+            // If there is some error, show form view
             return badRequest(form.render(filledForm));
         } else {
-
             if(isLatchOn){
-                // Everything OK, we enter
+                // If latch operation status is on
                 User created = filledForm.get();
+
+                // Get user from database by username
+                // Note: username is the name of a form field
                 UserDataSource userDataSource = new UserDataSource();
                 User newUser = userDataSource.getUser(created.username);
+
+                // This is a silly check.
+                // If logged username and form username are equals, or we can't find the new username in our database,
+                // we update the user.
                 if (created.username.equals(session("username")) || newUser == null){
                     userDataSource.updateUser(session("username"),created);
+                    // Update the username in the session
                     session("username",created.username);
                     return ok(summary.render(created));
                 }
+                // In other case, we show the error
                 filledForm.error("Username '"+created.username+"' is already taken");
                 filledForm.reject("username", "Username '"+created.username+"' is already taken");
                 return badRequest(form.render(filledForm));
             }
-            // <Error> Tiene latch bloqueado
+            // If latch operation is locked
             Logger.debug("<Error> Latch is OFF");
-
+            // Set form error message
             filledForm.error("-");
             filledForm.reject("username", "Error while editing your profile");
+            // Show form view
             return badRequest(form.render(filledForm));
         }
     }

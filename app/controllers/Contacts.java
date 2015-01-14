@@ -36,9 +36,10 @@ public class Contacts extends Controller {
         );
         return ok(form.render(contactForm.fill(existingContact)));
     }
-  
+
     /**
      * Handle the form submission.
+     * @return A Result
      */
     public static Result submit() {
         Form<Contact> filledForm = contactForm.bindFromRequest();

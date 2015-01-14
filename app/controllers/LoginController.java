@@ -18,6 +18,10 @@ import views.html.latch.*;
 
 import java.util.Date;
 
+/**
+ * Controller for login
+ * @author Enrique Ismael Mendoza Robaina (enriquemendozarobaina@gmail.com)
+ */
 public class LoginController extends Controller {
     
     /**
@@ -27,23 +31,29 @@ public class LoginController extends Controller {
     final static Form<PairingKey> pairingKeyForm = form(PairingKey.class);
 
     static Config config = ConfigFactory.load("application");
-  
-    /**
-     * Display a blank form.
-     */
 
+    /**
+     * Display a blank form with login.
+     * @return
+     */
     public static Result blank() {
         return ok(login.render(loginForm));
     }
 
     /**
-     * Handle the form submission.
+     * Handle the form submission for login.
+     * User the notation LatchCheckOperationStatus to know if user is allowed to perform this action or not
+     * First argument of notation is the latch operation id and the second is the accountId getting with LatchIdFactory
+     * @return A Result
      */
     @LatchCheckOperationStatus(value = "xjbieia3cvVVdv49MZar", latchId = LatchIdFactory.class)
     public static Result submit() {
         Form<User> filledForm = loginForm.bindFromRequest();
+
+        // Get status from the Notation output argument and assign that value to isLatchOn
         Boolean isLatchOn = (Boolean) Http.Context.current().args.get("status");
-        // Check repeated password
+
+        // Check if valid password
         if(filledForm.field("password").valueOr("").isEmpty()) {
             filledForm.reject("password", "Enter a valid password");
         }
@@ -57,69 +67,48 @@ public class LoginController extends Controller {
         
         if(filledForm.hasErrors()) {
             Logger.debug("Error with form");
+            // If there is any error in the form, return a badRequest
             return badRequest(login.render(filledForm));
         } else {
+            // If not, get the user from database by username field
             UserDataSource userDataSource = new UserDataSource();
             User user = userDataSource.getUser(filledForm.get().username);
             if (user != null){
+                // If everything is ok, we store user data in session
                 session("username", user.username);
                 session("email", user.email);
                 session("latchAccountId", user.latchAccountId);
-                Logger.info("User no es null! Password introducido: "+ filledForm.get().password+ "Password del user: "+user.password );
+                // Check user authentication
                 if (user.password.equals(filledForm.get().password)){
+                    // If user is authenticated and latch status is on
                     if (isLatchOn) {
-                        // If user is authenticated
                         // Check secretToken
                         Date today = new Date();
                         if (user.secretTokenExpiration == null || user.secretTokenExpiration.before(today)){
                             Logger.debug("<Warning> Update secretToken because it was past");
                             userDataSource.updateSecretToken(user.username);
                         }
+                        // Show the main page. In that case, PairController.blank() that show the pairing/unpairing view
                         return PairController.blank();
                     }
                 }
             }
             Logger.debug("<Error> User can't login");
+
+            // If user doesn't exist or latch is off, we clean session
             session().clear();
+
+            // Show error next to username field
             filledForm.reject("username","¡Error with login credentials!");
+
+            // Return user to the login view
             return unauthorized(login.render(filledForm));
         }
     }
 
-    /*public static Result login(User user){
-        // If user is authenticated
-        // Check latch status
-        boolean isLatchOn = true;
-        //String status = LatchController.checkLatchStatus(config.getString("latch.appId"));
-        String status = LatchController.checkLatchOperationStatus(config.getString("latch.loginOperationId"));
-
-        Logger.debug("Status: " + status.toString());
-        if(status.equals("off")){
-            Logger.debug("<Error> [Checking status] Latch is OFF");
-            isLatchOn = false;
-        }
-        Logger.debug("[Checking status] Latch is ON");
-
-        if(isLatchOn){
-            // Everything OK, we enter
-            Logger.debug("Latch is ON or is not paired");
-            if (user.secretTokenExpiration == null || user.secretTokenExpiration.before(new Date())){
-                Logger.debug("Update secretToken because it was past");
-                UserDataSource userDataSource = new UserDataSource();
-                userDataSource.updateSecretToken(user.username);
-            }
-            return LatchController.blank();
-        }
-        // <Error> Tiene latch bloqueado
-        Logger.debug("<Error> Latch is OFF");
-        session().clear();
-        Form<User> filledForm = loginForm.bindFromRequest();
-        filledForm.reject("username","¡Error with login credentials!");
-        return unauthorized(login.render(filledForm));
-    }*/
-
     /**
      * Handle logout
+     * @return Index page
      * */
     public static Result logout(){
         session().clear();
